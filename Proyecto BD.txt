@@ -1,0 +1,171 @@
+create database naturesvission;
+use naturesvission;
+
+create table tipooperacion(
+id tinyint not null auto_increment,
+nombre varchar(50) not null,
+primary key(id));
+
+create table producto(
+id smallint not null PRIMARY KEY auto_increment,
+cod_barras int not null unique,
+nombre varchar(100) not null,
+presentacion varchar(100),
+inv_minimo smallint not null default(10),
+pre_entrada double not null,
+pre_salida double not null,
+farmacologia varchar(100),
+fecha timestamp);
+
+create table proveedor(
+id smallint auto_increment,
+laboratorio varchar(100) not null,
+direccion varchar(100) not null,
+telefono varchar(20) not null,
+pagina varchar(100),
+correo varchar(100),
+fecha timestamp not null,
+primary key(id));
+
+create table tipo_usuario(
+id tinyint primary key auto_increment,
+nombre varchar(50) not null);
+
+create table usuario(
+id tinyint auto_increment,
+nombre varchar(100) not null,
+apellido varchar(100) not null,
+username varchar(50) not null,
+telefono varchar(20) not null,
+email varchar(100) not null,
+pass varchar(255) not null,
+id_tipousuario tinyint not null,
+last_date timestamp,
+primary key(id),
+foreign key(id_tipousuario) references tipo_usuario(id));
+
+create table venta(
+id mediumint auto_increment,
+cod_venta varchar(5) not null unique,
+id_usuario tinyint not null,
+id_proveedor smallint,
+total double not null,
+efectivo double,
+descuento double,
+fecha timestamp not null,
+primary key(id),
+foreign key(id_usuario) references usuario(id),
+foreign key(id_proveedor) references proveedor(id));
+
+create table operacion(
+id int auto_increment,
+id_producto smallint not null,
+q smallint not null,
+fec_venc date,
+id_tipooperacion tinyint not null default(2),
+id_venta mediumint,
+primary key(id),
+foreign key(id_producto) references producto(id),
+foreign key(id_tipooperacion) references tipooperacion(id),
+foreign key(id_venta) references venta(id));
+
+/*Ingreso de datos*/
+insert into tipooperacion(nombre) values ('Entrada'),('Salida');
+
+insert into tipo_usuario(nombre) values('Administrador'),('Empleado');
+
+insert into usuario(nombre,apellido,username,telefono,email,pass,id_tipousuario,last_date) values
+('Admin','istrador','admin','0000000','admin@mail.com','d033e22ae348aeb5660fc2140aec35850c4da997',1,now()),
+('Juan','Lopez','ljuan31','1111111','juanl@mail.com','1324',2,now());
+
+insert into producto(cod_barras,nombre,presentacion,inv_minimo,pre_entrada,pre_salida,farmacologia,fecha) values
+(102154654,'barbarus','Tarro',2,50000,70000,'proteina','2020-02-10 14:20:15'),
+(102184613,'barbarus(paleta)','Paleta',2,75000,96000,'proteina X12','2020-02-10 14:22:35'),
+(102487516,'TNT','Bolsa sellada',4,35000,48000,'proteina','2020-02-10 14:26:05'),
+(102876815,'flor de jamaica','Bolsa 30gr',5,1500,2500,'Antioxidante y adelgazar','2020-02-10 14:28:00'),
+(102678456,'semilla de chia','Bolsa Med 500gr',5,5000,6500,'abunda vitaminas, minerales y calcio','2020-02-10 14:30:15'),
+(103587135,'sal marina','Bolsa 500gr',4,6000,8500,'Desifectante vucal y culinario','2020-02-10 14:32:45'),
+(103589746,'salvado de avena','bolsa med 500gr',4,3500,5500,'fibra, estreñimiento y mejora digestivo e inflamación del colon','2020-02-10 14:35:45'),
+(103843665,'quinua molida','Bolsa med 500gr',4,5500,8500,'batidos','2020-02-10 14:36:15'),
+(103658746,'germen de trigo','bolsa med 500gr',4,2500,4000,'vitaminas minerales','2020-02-10 14:38:23'),
+(103654120,'curcuma','Bolsa peq 30gr',5,1200,2000,'Especia, uso culinario','2020-02-10 14:40:05'),
+(103565841,'bronquisan','jarabe',4,5000,8000,'gripe, tos y flemas','2020-02-10 14:45:32'),
+(103657840,'tutomax 360ml','jarabe',3,9000,11000,'enfermedades pulmonares','2020-02-10 14:46:15'),
+(104899785,'higron 120ml','jarabe',4,7000,9000,'purgante para adultos','2020-02-10 14:51:35'),
+(104895648,'vitacerebrina francesa 360ml','jarabe',3,5000,8000,'onega 3, 6 y 9','2020-02-10 14:52:15'),
+(104897898,'artin x25','grageas',3,5000,6000,'artritis, osteoartritis reumatoidea, tendinitis y lumbalgia','2020-02-10 14:53:25');
+
+insert into operacion(id_producto,q,fec_venc,id_tipooperacion) values
+(1,3,'2020-08-10',1),(2,2,'2020-08-10',1),(3,4,'2020-10-10',1),
+(4,6,'2020-04-10',1),(5,6,'2020-05-10',1),(6,5,'2020-12-10',1),
+(7,6,'2020-04-10',1),(8,5,'2020-03-10',1),(9,5,'2020-06-10',1),
+(10,4,'2020-07-10',1),(11,6,'2020-07-10',1),(12,4,'2020-09-10',1),
+(13,7,'2020-11-10',1),(14,5,'2020-03-10',1),(15,4,'2020-08-10',1);
+
+insert into proveedor(laboratorio,direccion,telefono,pagina,correo,fecha) values
+('healthy America','Cra 37 No 13-185','(02)3865880','www.healthy-america.com.co',null,'2020-02-10 13:01:03'),
+("Fito medic's",'Calle 8 No 13-45','(6)8401818','www.fitomedics.com',null,'2020-02-10 13:05:15'),
+('Adriangel','Calle 18 sur No 69-35 Bogota D.C.','3014510489',null,'pedidosadriangel@gmail.com','2020-02-10 13:10:59');
+
+insert into venta(cod_venta,id_usuario,total,efectivo,descuento,fecha) values
+('F001',2,11000,15000,0,'2020-02-12 09:10:03'),('F002',2,8000,10000,0,'2020-02-12 10:18:13'),
+('F003',2,56500,60000,0,'2020-02-12 09:10:03');
+
+insert into operacion(id_producto,q,id_tipooperacion,id_venta) values
+(4,1,2,1),(8,1,2,1),(15,1,2,2),(10,1,2,2),(3,1,2,3),(6,1,2,3);
+
+insert into venta(cod_venta,id_usuario,id_proveedor,total,fecha) values
+('A001',2,3,150000,'2020-02-15 08:15:08'),('A002',2,1,6000,'2020-02-15 08:15:08');
+
+insert into operacion(id_producto,q,fec_venc,id_tipooperacion,id_venta) values
+(2,2,'2020-06-30',1,4),(9,5,'2020-09-15',1,5);
+
+/*Realizar una consulta mostrando el codigo de barras, nombre, y cantidad actual de los productos
+ordenados alfabeticamente por nombre de producto*/
+select p.cod_barras,p.nombre,sum(if(o.id_tipooperacion=1,q,0))-sum(if(o.id_tipooperacion=2,q,0)) as cantidad from
+producto as p inner join operacion as o on p.id=o.id_producto group by p.nombre order by p.nombre;
+
+/*Realizar una consulta en donde se muestre el nombre, cantidad actual, el ingreso, la salida y fecha_vencimiento
+de los productos ordenados descendentemente donde la fecha de vencimiento este entre el los meses de marzo a
+septiembre*/
+select p.nombre,sum(if(o.id_tipooperacion=1,q,0))-sum(if(o.id_tipooperacion=2,q,0)) as cantidadActual,
+sum(if(o.id_tipooperacion=1 and id_venta is not null,q,0)) as Ingresos,
+sum(if(o.id_tipooperacion=2 and id_venta is not null,q,0)) as Salida,
+o.fec_venc from producto as p inner join operacion as o on p.id=o.id_producto group by p.nombre
+having month(o.fec_venc)>=3 and month(o.fec_venc)<=9;
+
+/*Realizar una consulta donde muestre el laboratorio, el producto, la cantidad, el nombre y apellido y la fecha de ingreso
+ordenados de mayor a menor por la cantidad*/
+select pr.laboratorio,p.nombre,q as cantidad,concat(u.nombre,' ',u.apellido) as nombre,v.fecha from
+(((venta as v inner join proveedor as pr on pr.id=v.id_proveedor) inner join operacion as o on
+v.id=o.id_venta) inner join producto as p on p.id=o.id_producto) inner join usuario as u on u.id=v.id_usuario
+order by q desc;
+
+/*Realizar la consulta del total en las ventas que se han obtenido en el primer semestre del año*/
+select concat('$',format(sum(total-ifnull(descuento,0)),0)) as Vendido from venta where cod_venta like 'F%' and (month(fecha)>0 and month(fecha)<7);
+
+/*Realizar la consulta del total en las comprado que se han obtenido en el primer trimestre del año*/
+select concat('$',format(sum(total-ifnull(descuento,0)),0)) as comprado from venta where cod_venta like 'A%' and (month(fecha)>0 and month(fecha)<4);
+
+/*Realizar una consulta en donde muestre el codigo de registro, el nombre de los productos, la cantidad y el nombre del laboratorio donde fueron comprados*/
+select v.cod_venta "Codigo de Registro",p.nombre "Producto",o.q "Cantidad",pr.laboratorio from 
+((producto as p inner join operacion as o on p.id=o.id_producto)
+inner join venta as v on v.id=o.id_venta)
+inner join proveedor as pr on pr.id=v.id_proveedor where cod_venta like 'A%';
+
+/*Realizar una consulta en donde muestre el nombre completo del usuario y la cantidad de ventas que realizo dicho usuario*/
+select concat(u.nombre,' ' ,u.apellido) "Nombre Completo",count(v.cod_venta) "# Ventas" from
+venta as v inner join usuario as u on u.id=v.id_usuario where v.cod_venta like 'F%';
+
+/*realizar una consulta donde muestre el nombre del producto y la cantidad que se vendio*/
+select p.nombre "Producto",sum(if(o.id_tipooperacion=2,q,0)) "Cantidades vendidas" from
+producto as p inner join operacion as o on p.id=o.id_producto
+where o.id_tipooperacion=2 group by p.nombre;
+
+/*Realizar una consulta donde se muestre todos los datos del proveedor donde se registraron en el primer semestre del año y que tengan pagina web*/
+
+select * from proveedor where (month(fecha) between 1 and 6) and pagina is not null;
+
+/*Realizar una consulta mostrando el nombre del producto y su precio de venta donde el precio de venta sea menor al promedio del precio de venta de todos los productos*/
+
+select nombre "Producto",concat('$',format(pre_salida,0)) as Precio from producto where pre_salida<(select avg(pre_salida) from producto);
